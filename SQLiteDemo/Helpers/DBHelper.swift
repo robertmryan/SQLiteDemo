@@ -2,8 +2,7 @@
 //  DBHelper.swift
 //  SQLiteDemo
 //
-//  Created by Robert Ryan on 7/12/20.
-//  Copyright © 2020 Robert Ryan. All rights reserved.
+//  Created by https://medium.com/@imbilalhassan/saving-data-in-sqlite-db-in-ios-using-swift-4-76b743d3ce0e
 //
 
 import Foundation
@@ -31,64 +30,81 @@ extension DBHelper {
             }
         }
 
-        let insertStatementString = "INSERT INTO person (Id, name, age) VALUES (?, ?, ?);"
-        var insertStatement: OpaquePointer? = nil
-        if sqlite3_prepare_v2(db, insertStatementString, -1, &insertStatement, nil) == SQLITE_OK {
-            sqlite3_bind_int(insertStatement, 1, Int32(id))
-            sqlite3_bind_text(insertStatement, 2, (name as NSString).utf8String, -1, nil)
-            sqlite3_bind_int(insertStatement, 3, Int32(age))
+        let sql = "INSERT INTO person (id, name, age) VALUES (?, ?, ?);"
+        var statement: OpaquePointer? = nil
 
-            if sqlite3_step(insertStatement) == SQLITE_DONE {
-                print("Successfully inserted row.")
-            } else {
-                print("Could not insert row.")
-            }
-        } else {
-            print("INSERT statement could not be prepared.")
+        guard sqlite3_prepare_v2(db, sql, -1, &statement, nil) == SQLITE_OK else {
+            print("INSERT statement could not be prepared.", errorMessage)
+            return
         }
-        sqlite3_finalize(insertStatement)
+
+        defer { sqlite3_finalize(statement) }
+
+        sqlite3_bind_int(statement, 1, Int32(id))
+        sqlite3_bind_text(statement, 2, name.cString(using: .utf8), -1, SQLITE_TRANSIENT)
+        sqlite3_bind_int(statement, 3, Int32(age))
+
+        if sqlite3_step(statement) == SQLITE_DONE {
+            print("Successfully inserted row.")
+        } else {
+            print("Could not insert row.", errorMessage)
+        }
     }
 
     func read() -> [Person] {
-        let queryStatementString = "SELECT * FROM person;"
-        var queryStatement: OpaquePointer? = nil
+        let sql = "SELECT * FROM person;"
+        var statement: OpaquePointer? = nil
 
-        var psns : [Person] = []
-        if sqlite3_prepare_v2(db, queryStatementString, -1, &queryStatement, nil) == SQLITE_OK {
-            while sqlite3_step(queryStatement) == SQLITE_ROW {
-                let id = sqlite3_column_int(queryStatement, 0)
-                let name = String(describing: String(cString: sqlite3_column_text(queryStatement, 1)))
-                let year = sqlite3_column_int(queryStatement, 2)
-                psns.append(Person(id: Int(id), name: name, age: Int(year)))
-                print("Query Result:")
-                print("\(id) | \(name) | \(year)")
-            }
-        } else {
-            print("SELECT statement could not be prepared")
+        guard sqlite3_prepare_v2(db, sql, -1, &statement, nil) == SQLITE_OK else {
+            print("SELECT statement could not be prepared.", errorMessage)
+            return []
         }
-        sqlite3_finalize(queryStatement)
-        return psns
+
+        defer { sqlite3_finalize(statement) }
+
+        var people: [Person] = []
+
+        var returnCode = sqlite3_step(statement)
+        while returnCode == SQLITE_ROW {
+            let id = sqlite3_column_int(statement, 0)
+            let name = sqlite3_column_text(statement, 1).flatMap { String(cString: $0) } ?? ""
+            let year = sqlite3_column_int(statement, 2)
+            people.append(Person(id: Int(id), name: name, age: Int(year)))
+
+            returnCode = sqlite3_step(statement)
+        }
+
+        if returnCode != SQLITE_DONE {
+            print("Error retrieving data.", errorMessage)
+        }
+
+        return people
     }
 
     func deleteByID(id: Int) {
-        let deleteStatementStirng = "DELETE FROM person WHERE Id = ?;"
-        var deleteStatement: OpaquePointer? = nil
+        let sql = "DELETE FROM person WHERE id = ?;"
+        var statement: OpaquePointer? = nil
 
-        if sqlite3_prepare_v2(db, deleteStatementStirng, -1, &deleteStatement, nil) == SQLITE_OK {
-            sqlite3_bind_int(deleteStatement, 1, Int32(id))
-            if sqlite3_step(deleteStatement) == SQLITE_DONE {
-                print("Successfully deleted row.")
-            } else {
-                print("Could not delete row.")
-            }
-        } else {
+        guard sqlite3_prepare_v2(db, sql, -1, &statement, nil) == SQLITE_OK else {
             print("DELETE statement could not be prepared")
+            return
         }
-        sqlite3_finalize(deleteStatement)
+
+        defer { sqlite3_finalize(statement) }
+
+        sqlite3_bind_int(statement, 1, Int32(id))
+        if sqlite3_step(statement) == SQLITE_DONE {
+            print("Successfully deleted row.")
+        } else {
+            print("Could not delete row.", errorMessage)
+        }
     }
 }
 
 // MARK: - Private implementation methods
+
+private let SQLITE_STATIC = unsafeBitCast(0, to: sqlite3_destructor_type.self)
+private let SQLITE_TRANSIENT = unsafeBitCast(-1, to: sqlite3_destructor_type.self)
 
 private extension DBHelper {
     func openDatabase() -> OpaquePointer? {
@@ -97,27 +113,40 @@ private extension DBHelper {
             .appendingPathComponent(dbPath)
 
         var db: OpaquePointer? = nil
-        if sqlite3_open(fileURL.path, &db) != SQLITE_OK {
-            print("error opening database")
+        guard sqlite3_open(fileURL.path, &db) == SQLITE_OK else {
+            print("error opening database", errorMessage)
+            sqlite3_close(db)
+            db = nil
             return nil
-        } else {
-            print("Successfully opened connection to database at \(dbPath)")
-            return db
         }
+        
+        print("Successfully opened connection to database at \(dbPath)")
+        return db
     }
 
     func createTable() {
-        let createTableString = "CREATE TABLE IF NOT EXISTS person(Id INTEGER PRIMARY KEY,name TEXT,age INTEGER);"
-        var createTableStatement: OpaquePointer? = nil
-        if sqlite3_prepare_v2(db, createTableString, -1, &createTableStatement, nil) == SQLITE_OK {
-            if sqlite3_step(createTableStatement) == SQLITE_DONE {
-                print("person table created.")
-            } else {
-                print("person table could not be created.")
-            }
-        } else {
-            print("CREATE TABLE statement could not be prepared.")
+        let sql = "CREATE TABLE IF NOT EXISTS person (id INTEGER PRIMARY KEY, name TEXT, age INTEGER);"
+        var statement: OpaquePointer? = nil
+
+        guard sqlite3_prepare_v2(db, sql, -1, &statement, nil) == SQLITE_OK else {
+            print("CREATE TABLE statement could not be prepared.", errorMessage)
+            return
         }
-        sqlite3_finalize(createTableStatement)
+
+        defer { sqlite3_finalize(statement) }
+
+        if sqlite3_step(statement) == SQLITE_DONE {
+            print("person table created.")
+        } else {
+            print("person table could not be created.", errorMessage)
+        }
+
+    }
+
+    /// SQLite error message
+
+    var errorMessage: String {
+        return sqlite3_errmsg(db)
+            .flatMap { String(cString: $0) } ?? "Unknown error"
     }
 }
