@@ -109,7 +109,7 @@ private let SQLITE_TRANSIENT = unsafeBitCast(-1, to: sqlite3_destructor_type.sel
 private extension DBHelper {
     func openDatabase() -> OpaquePointer? {
         let fileURL = try! FileManager.default
-            .url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
+            .url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
             .appendingPathComponent(dbPath)
 
         var db: OpaquePointer? = nil

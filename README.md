@@ -24,3 +24,4 @@ While working on the cleanup of this routine, I also:
 * Use `defer` clauses for `sqlite3_finalize` calls as a defensive programming tactic, where we don't have to fear that we might have a path of execution where the prepared SQL statement isn't finalized.
 * Excised `NSString` reference.
 * Added meaningful error messages from SQLite.
+* Use Application Support directory rather than Documents directory. The latter was historically used for this sort of stuff, but with the advent of the Files app in iOS, the Documents directory really should only be used for external user-facing files.
