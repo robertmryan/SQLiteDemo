@@ -13,6 +13,8 @@
 		832A83DA24BB9F3700372E2B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 832A83D824BB9F3700372E2B /* Main.storyboard */; };
 		832A83DC24BB9F3800372E2B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 832A83DB24BB9F3800372E2B /* Assets.xcassets */; };
 		832A83DF24BB9F3800372E2B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 832A83DD24BB9F3800372E2B /* LaunchScreen.storyboard */; };
+		832A83EC24BB9FD500372E2B /* DBHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 832A83EB24BB9FD500372E2B /* DBHelper.swift */; };
+		832A83EE24BBA02400372E2B /* Person.swift in Sources */ = {isa = PBXBuildFile; fileRef = 832A83ED24BBA02400372E2B /* Person.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +26,9 @@
 		832A83DB24BB9F3800372E2B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		832A83DE24BB9F3800372E2B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		832A83E024BB9F3800372E2B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		832A83EB24BB9FD500372E2B /* DBHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DBHelper.swift; sourceTree = "<group>"; };
+		832A83ED24BBA02400372E2B /* Person.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Person.swift; sourceTree = "<group>"; };
+		838ADBBC24BBA1EE00C97417 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -40,6 +45,7 @@
 		832A83C624BB9F3700372E2B = {
 			isa = PBXGroup;
 			children = (
+				838ADBBC24BBA1EE00C97417 /* README.md */,
 				832A83D124BB9F3700372E2B /* SQLiteDemo */,
 				832A83D024BB9F3700372E2B /* Products */,
 			);
@@ -56,15 +62,57 @@
 		832A83D124BB9F3700372E2B /* SQLiteDemo */ = {
 			isa = PBXGroup;
 			children = (
+				832A83E624BB9F4800372E2B /* Lifecycle */,
+				832A83EA24BB9FB100372E2B /* Helpers */,
+				832A83E924BB9F8700372E2B /* Model */,
+				832A83E724BB9F5600372E2B /* View */,
+				832A83E824BB9F7400372E2B /* Support files */,
+			);
+			path = SQLiteDemo;
+			sourceTree = "<group>";
+		};
+		832A83E624BB9F4800372E2B /* Lifecycle */ = {
+			isa = PBXGroup;
+			children = (
 				832A83D224BB9F3700372E2B /* AppDelegate.swift */,
 				832A83D424BB9F3700372E2B /* SceneDelegate.swift */,
+			);
+			path = Lifecycle;
+			sourceTree = "<group>";
+		};
+		832A83E724BB9F5600372E2B /* View */ = {
+			isa = PBXGroup;
+			children = (
 				832A83D624BB9F3700372E2B /* ViewController.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		832A83E824BB9F7400372E2B /* Support files */ = {
+			isa = PBXGroup;
+			children = (
 				832A83D824BB9F3700372E2B /* Main.storyboard */,
 				832A83DB24BB9F3800372E2B /* Assets.xcassets */,
 				832A83DD24BB9F3800372E2B /* LaunchScreen.storyboard */,
 				832A83E024BB9F3800372E2B /* Info.plist */,
 			);
-			path = SQLiteDemo;
+			name = "Support files";
+			sourceTree = "<group>";
+		};
+		832A83E924BB9F8700372E2B /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				832A83ED24BBA02400372E2B /* Person.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		832A83EA24BB9FB100372E2B /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				832A83EB24BB9FD500372E2B /* DBHelper.swift */,
+			);
+			path = Helpers;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -138,9 +186,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				832A83EE24BBA02400372E2B /* Person.swift in Sources */,
 				832A83D724BB9F3700372E2B /* ViewController.swift in Sources */,
 				832A83D324BB9F3700372E2B /* AppDelegate.swift in Sources */,
 				832A83D524BB9F3700372E2B /* SceneDelegate.swift in Sources */,
+				832A83EC24BB9FD500372E2B /* DBHelper.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
