@@ -25,3 +25,4 @@ While working on the cleanup of this routine, I also:
 * Excised `NSString` reference.
 * Added meaningful error messages from SQLite.
 * Use Application Support directory rather than Documents directory. The latter was historically used for this sort of stuff, but with the advent of the Files app in iOS, the Documents directory really should only be used for external user-facing files.
+* Modified `INSERT` statement to be `INSERT OR REPLACE`, eliminating inefficient loading of all records to check for existence.

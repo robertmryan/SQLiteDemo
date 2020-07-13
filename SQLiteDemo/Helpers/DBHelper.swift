@@ -2,7 +2,7 @@
 //  DBHelper.swift
 //  SQLiteDemo
 //
-//  Created by https://medium.com/@imbilalhassan/saving-data-in-sqlite-db-in-ios-using-swift-4-76b743d3ce0e
+//  Adapted from https://medium.com/@imbilalhassan/saving-data-in-sqlite-db-in-ios-using-swift-4-76b743d3ce0e
 //
 
 import Foundation
@@ -23,14 +23,7 @@ class DBHelper {
 extension DBHelper {
 
     func insert(id: Int, name: String, age: Int) {
-        let people = read()
-        for p in people {
-            if p.id == id {
-                return
-            }
-        }
-
-        let sql = "INSERT INTO person (id, name, age) VALUES (?, ?, ?);"
+        let sql = "INSERT OR REPLACE INTO person (id, name, age) VALUES (?, ?, ?);"
         var statement: OpaquePointer? = nil
 
         guard sqlite3_prepare_v2(db, sql, -1, &statement, nil) == SQLITE_OK else {
@@ -109,7 +102,7 @@ private let SQLITE_TRANSIENT = unsafeBitCast(-1, to: sqlite3_destructor_type.sel
 private extension DBHelper {
     func openDatabase() -> OpaquePointer? {
         let fileURL = try! FileManager.default
-            .url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
+            .url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
             .appendingPathComponent(dbPath)
 
         var db: OpaquePointer? = nil

@@ -25,6 +25,7 @@ class ViewController: UIViewController {
         db.insert(id: 2, name: "Bosh", age: 25)
         db.insert(id: 3, name: "Thor", age: 23)
         db.insert(id: 4, name: "Edward", age: 44)
+        db.insert(id: 5, name: "Foobar", age: -1)  // dummy record, replaced below
         db.insert(id: 5, name: "Ronaldo", age: 34)
 
         people = db.read()
